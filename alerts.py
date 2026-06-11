@@ -7,7 +7,7 @@ from telegram import Bot
 from telegram.error import TelegramError
 
 import config
-from scraper import FloorPriceResult
+from models import FloorPriceResult
 from state import State
 
 log = logging.getLogger(__name__)
@@ -26,8 +26,9 @@ def _format_message(result: FloorPriceResult, threshold: float, escalated: bool)
         f"Section: {result.section}\n"
         f"Floor listings available: {result.floor_listing_count}\n"
         f"Threshold crossed: ${threshold:.0f}\n"
+        f"Source: {config.SOURCE}\n"
         f"Checked at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z').strip()}\n\n"
-        f"{config.EVENT_URL}"
+        f"{config.ALERT_URL}"
     )
 
 
