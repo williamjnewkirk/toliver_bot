@@ -1,0 +1,7 @@
+.env
+state.json
+bot.log
+.browser_profile/
+debug_page.png
+__pycache__/
+*.pyc
