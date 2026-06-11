@@ -9,8 +9,10 @@ import os
 import random
 import re
 import time
-from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
+
+from models import FloorPriceResult
 
 # rebrowser-playwright is a drop-in Playwright fork that patches the CDP
 # Runtime.enable leak DataDome fingerprints. Prefer it; fall back to vanilla.
@@ -75,22 +77,14 @@ PROFILE_DIR = os.getenv("PROFILE_DIR", ".browser_profile")
 _PRICE_RE = re.compile(r"\$\s*([\d,]+(?:\.\d{1,2})?)")
 
 
-@dataclass
-class FloorPriceResult:
-    lowest_price: float
-    section: str
-    floor_listing_count: int
-    total_listing_count: int
-
-
-def _parse_price(text: str) -> float | None:
+def _parse_price(text: str) -> Optional[float]:
     m = _PRICE_RE.search(text)
     if not m:
         return None
     return float(m.group(1).replace(",", ""))
 
 
-def fetch_floor_price(event_url: str, floor_keywords: list[str]) -> FloorPriceResult | None:
+def fetch_floor_price(event_url: str, floor_keywords: list[str]) -> Optional[FloorPriceResult]:
     """Load the event page and return the lowest floor/pit price.
 
     Returns None on any failure (timeout, bot block, no prices found) —
@@ -103,7 +97,7 @@ def fetch_floor_price(event_url: str, floor_keywords: list[str]) -> FloorPriceRe
         return None
 
 
-def _fetch(event_url: str, floor_keywords: list[str]) -> FloorPriceResult | None:
+def _fetch(event_url: str, floor_keywords: list[str]) -> Optional[FloorPriceResult]:
     profile_dir = str(Path(PROFILE_DIR).absolute())
     with sync_playwright() as p:
         # Persistent context: keeps cookies (including DataDome's) between
